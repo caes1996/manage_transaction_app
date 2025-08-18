@@ -1,15 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
+import 'package:manage_transaction_app/core/constants/app_extensions.dart';
 import 'package:manage_transaction_app/core/constants/app_routes.dart';
 
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.child});
   final Widget child;
-
-  // Breakpoints simples
-  static const double _tabletBp = 700;
-  static const double _desktopBp = 1024;
 
   int _indexFromPath(String location) {
     if (location.startsWith(AppRoutes.transactions)) return 0;
@@ -36,10 +33,6 @@ class AppShell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final size = MediaQuery.sizeOf(context);
-    final isMobile = size.width < _tabletBp;
-    final isTablet = size.width >= _tabletBp && size.width < _desktopBp;
-    final isDesktop = size.width >= _desktopBp;
 
     final uri = GoRouterState.of(context).uri.toString();
     final idx = _indexFromPath(uri);
@@ -47,7 +40,7 @@ class AppShell extends StatelessWidget {
     final appBar = AppBar(title: const Text('Manage Transaction App'));
 
     // --- MÓVIL: NavigationBar inferior
-    if (isMobile) {
+    if (context.isMobile) {
       return Scaffold(
         appBar: appBar,
         body: child,
@@ -69,9 +62,9 @@ class AppShell extends StatelessWidget {
       selectedIndex: idx,
       onDestinationSelected: (i) => _goTo(i, context),
       // En desktop se muestra extendido (ícono + texto)
-      extended: isDesktop,
+      extended: context.isDesktop,
       // En tablet solo etiqueta seleccionada
-      labelType: isTablet ? NavigationRailLabelType.selected : NavigationRailLabelType.none,
+      labelType: context.isTablet ? NavigationRailLabelType.selected : NavigationRailLabelType.none,
       leading: SafeArea(
         bottom: false,
         child: IconButton(
@@ -115,7 +108,7 @@ class AppShell extends StatelessWidget {
           Expanded(
             child: Padding(
               // Más aire en desktop
-              padding: EdgeInsets.all(isDesktop ? 24 : 12),
+              padding: EdgeInsets.all(context.isDesktop ? 24 : 12),
               child: child,
             ),
           ),

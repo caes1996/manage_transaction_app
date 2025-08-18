@@ -32,8 +32,7 @@ class ManageTransactionApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AuthBloc>(
-          create: (_) => sl<AuthBloc>()
-            ..add(AuthStarted()),
+          create: (_) => sl<AuthBloc>()..add(AuthStarted()),
         ),
         BlocProvider<UserBloc>(
           create: (_) => sl<UserBloc>()

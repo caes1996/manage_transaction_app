@@ -16,19 +16,17 @@ class AuthRemoteDataSource {
     return UserModel.fromSupabaseUser(result.user!);
   }
 
-  Future<UserEntity> signUp(String email, String password) async {
+  Future<UserEntity> signUp(String email, String password, String name, UserRole role) async {
     final result = await client.auth.signUp(
       email: email,
       password: password,
+      data: {
+        'name': name,
+        'role': role.name,
+      },
+      
     );
     if (result.user == null) throw Exception('No se pudo crear el usuario');
-    // await client.schema('mock_data').from('users').insert({
-    //   'id': result.user!.id,
-    //   'email': result.user!.email,
-    //   'name': 'User test', // TODO: nombre real
-    //   'role': 'transactional',
-    //   'created_at': DateTime.now(),
-    // });
     return UserModel.fromSupabaseUser(result.user!);
   }
 

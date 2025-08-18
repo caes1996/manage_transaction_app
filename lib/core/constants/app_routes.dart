@@ -48,8 +48,7 @@ class AppRouter {
   final AuthBloc _authBloc;
   final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
-  bool _isAuthKnown(AuthState? s) =>
-      s is AuthAuthenticated || s is AuthUnauthenticated;
+  bool _isAuthKnown(AuthState? s) => s is AuthAuthenticated || s is AuthUnauthenticated || s is AuthError;
 
   GoRouter _build() {
     return GoRouter(

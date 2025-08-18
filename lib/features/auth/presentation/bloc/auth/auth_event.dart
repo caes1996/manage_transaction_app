@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:manage_transaction_app/features/auth/domain/entities/user_entity.dart';
 
 abstract class AuthEvent extends Equatable {
   @override
@@ -15,7 +16,9 @@ class SignInRequested extends AuthEvent {
 class SignUpRequested extends AuthEvent {
   final String email;
   final String password;
-  SignUpRequested(this.email, this.password);
+  final String name;
+  final UserRole role;
+  SignUpRequested(this.email, this.password, this.name, this.role);
 }
 
 class SignOutRequested extends AuthEvent {}

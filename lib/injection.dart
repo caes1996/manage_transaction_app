@@ -27,18 +27,18 @@ Future<void> initDependencies() async {
 
   sl.registerLazySingleton<SupabaseClient>(() => Supabase.instance.client);
 
+  // DataSources
   sl.registerLazySingleton<AuthRemoteDataSource>(() => AuthRemoteDataSource(sl()));
-  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
-
-  sl.registerFactory(() => AuthBloc(sl()));
-
-  // User
   sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource(sl()));
-  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
-  sl.registerFactory(() => UserBloc(sl()));
-
-  // Transaction
   sl.registerLazySingleton<TransactionRemoteDataSource>(() => TransactionRemoteDataSource(sl()));
+
+  // Repositories
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl(), sl()));
+  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
   sl.registerLazySingleton<TransactionRepository>(() => TransactionRepositoryImpl(sl()));
+
+  // Blocs
+  sl.registerFactory(() => AuthBloc(sl()));
+  sl.registerFactory(() => UserBloc(sl()));
   sl.registerFactory(() => TransactionBloc(sl()));
 }

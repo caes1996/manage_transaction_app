@@ -1,35 +1,49 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:manage_transaction_app/features/auth/domain/entities/user_entity.dart';
+import 'package:manage_transaction_app/features/auth/data/models/user_model.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class UserRemoteDataSource {
   final SupabaseClient client;
   UserRemoteDataSource(this.client);
-  final String schema = dotenv.env['DB_SCHEMA_TEST']!;
-  SupabaseQueryBuilder get _usersTable => client.from('v_users');
 
-  UserEntity _rowToEntity(Map<String, dynamic> row) {
-    return UserEntity(
-      id: row['id'] as String,
-      email: row['email'] as String,
-      name: row['name'] as String,
-      role: UserRole.values.firstWhere((e) => e.name == row['role']),
-      createdAt: DateTime.parse(row['created_at'] as String),
-    );
+  final String _schema = dotenv.env['DB_SCHEMA_TEST']!;
+  final String _tableName = 'users';
+
+  PostgrestQueryBuilder get _usersTable => client.schema(_schema).from(_tableName);
+
+  Future<bool> existsUserRoot() async {
+    final exists = await _usersTable.select().eq('role', 'root').limit(1).maybeSingle();
+    return exists != null;
   }
 
-  Future<UserEntity> getUserById(String id) async {
-    final result = await _usersTable.select().eq('id', id).maybeSingle();
-    if (result == null) throw Exception('Usuario no encontrado');
-    return _rowToEntity(result);
-  }
-
-  Future<List<UserEntity>> getAllUsers() async {
-    final result = await _usersTable.select();
-    final users = result.map((row) {
-      return _rowToEntity(row);
+  Future<void> ensureSelfExists(User user) async {
+    final exists = await _usersTable.select().eq('id', user.id).maybeSingle();
+    if (exists == null) {
+      await _usersTable.insert({
+        'id': user.id,
+        'email': user.email,
+        'name': (user.userMetadata?['name'] ?? ''),
+        'role': (user.userMetadata?['role'] ?? ''),
+      });
     }
-    ).toList();
-    return users;
+  }
+
+  Future<void> updateUser(String id, UserModel user) async {
+    await _usersTable.update(user.toDbUpdate()).eq('id', id).select().single();
+  }
+
+  Future<void> deleteUser(String id) async {
+    await _usersTable.delete().eq('id', id).select().single();
+  }
+
+  Future<UserModel> getUserById(String id) async {
+    final row = await _usersTable.select().eq('id', id).maybeSingle();
+    if (row == null) throw Exception('No se encontro el usuario');
+    return UserModel.fromDb(row);
+  }
+
+  Future<List<UserModel>> getAllUsers() async {
+    final rows = await _usersTable.select();
+    return rows.map((row) => UserModel.fromDb(row)).toList();
   }
 }

@@ -29,7 +29,6 @@ class TransactionRemoteDataSource {
 
   Future<TransactionEntity?> getTransactionById(int id) async {
     final row = await _table.select().eq('id', id).maybeSingle();
-    print('Transaction 1: $row');
     if (row == null) return null;
     return TransactionModel.fromDb(row).toEntity();
   }

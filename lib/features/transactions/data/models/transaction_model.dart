@@ -2,7 +2,7 @@ import '../../domain/entities/transaction_entity.dart';
 
 class TransactionModel extends TransactionEntity {
   const TransactionModel({
-    required super.id,
+    super.id,
     required super.title,
     required super.concept,
     required super.amount,
@@ -10,10 +10,10 @@ class TransactionModel extends TransactionEntity {
     required super.destination,
     required super.createdBy,
     required super.createdAt,
-    required super.approvedBy,
-    required super.approvedAt,
-    required super.rejectedBy,
-    required super.rejectedAt,
+    super.approvedBy,
+    super.approvedAt,
+    super.rejectedBy,
+    super.rejectedAt,
     required super.status,
   });
 

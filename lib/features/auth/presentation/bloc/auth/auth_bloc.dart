@@ -10,26 +10,52 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   StreamSubscription? _subscription;
 
   AuthBloc(this.authRepository) : super(AuthInitial()) {
-    on<AuthStarted>((event, emit) {
-      final session = authRepository.currentSession();
-      if (session != null) {
-        emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
-      } else {
-        emit(AuthUnauthenticated());
-      }
+    on<AuthStarted>((event, emit) async {
+      try {
+        final session = authRepository.currentSession();
 
-      _subscription?.cancel();
-      _subscription = authRepository.getAuthStateChanges().listen((user) {
-        if (user != null) {
-          add(_AuthSessionArrived(user: user));
+        if (session != null) {
+          try {
+            await authRepository.ensureCurrentUserRow();
+          } catch (_) {
+            // ignore: avoid_print
+            print('Error al iniciar sesión: auth_bloc line 19');
+          }
+          emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
         } else {
-          add(_AuthSessionCleared());
+          emit(AuthUnauthenticated());
         }
-      });
-      final user = authRepository.currentUser();
-      if (user != null) {
-        emit(AuthAuthenticated(user));
-      } else {
+
+        _subscription?.cancel();
+        _subscription = authRepository.getAuthStateChanges().listen((user) async {
+          if (user != null) {
+            try {
+              await authRepository.ensureCurrentUserRow();
+            } catch (_) {
+              // ignore: avoid_print
+              print('Error al iniciar sesión: auth_bloc line 32');
+            }
+            add(_AuthSessionArrived(user: user));
+          } else {
+            add(_AuthSessionCleared());
+          }
+        });
+
+        final user = authRepository.currentUser();
+        if (user != null) {
+          try {
+            await authRepository.ensureCurrentUserRow();
+          } catch (_) {
+            // ignore: avoid_print
+            print('Error al iniciar sesión: auth_bloc line 45');
+          }
+          emit(AuthAuthenticated(user));
+        } else {
+          emit(AuthUnauthenticated());
+        }
+      } catch (e) {
+        // Nunca te quedes en AuthInitial
+        emit(AuthError('Error iniciando estado de sesión: $e'));
         emit(AuthUnauthenticated());
       }
     });
@@ -48,7 +74,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignUpRequested>((event, emit) async {
       emit(AuthLoading());
       try {
-        final user = await authRepository.signUp(event.email, event.password);
+        final exists = await authRepository.existsUserRoot();
+        if (exists) {
+          emit(AuthError('Ya existe un usuario root'));
+          emit(AuthUnauthenticated());
+          return;
+        }
+        final user = await authRepository.signUp(event.email, event.password, event.name, event.role);
         emit(AuthAuthenticated(user));
       } catch (e) {
         emit(AuthError('No se pudo crear el usuario. Error: $e'));

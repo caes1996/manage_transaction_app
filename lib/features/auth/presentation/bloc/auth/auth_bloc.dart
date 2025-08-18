@@ -1,8 +1,9 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:manage_transaction_app/features/auth/data/models/user_model.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-import '../../domain/repositories/auth_repository.dart';
+import '../../../domain/repositories/auth_repository.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
@@ -10,6 +11,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this.authRepository) : super(AuthInitial()) {
     on<AuthStarted>((event, emit) {
+      final session = authRepository.currentSession();
+      if (session != null) {
+        emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
+      } else {
+        emit(AuthUnauthenticated());
+      }
+
       _subscription?.cancel();
       _subscription = authRepository.getAuthStateChanges().listen((user) {
         if (user != null) {

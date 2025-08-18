@@ -3,9 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:manage_transaction_app/core/constants/app_routes.dart';
-import '../../presentation/bloc/auth_bloc.dart';
-import '../../presentation/bloc/auth_event.dart';
-import '../../presentation/bloc/auth_state.dart';
+import '../bloc/auth/auth_bloc.dart';
+import '../bloc/auth/auth_event.dart';
+import '../bloc/auth/auth_state.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});

@@ -29,13 +29,14 @@ class AuthRemoteDataSource {
     //   'role': 'transactional',
     //   'created_at': DateTime.now(),
     // });
-    print('result.user! -> ${result.user!}');
     return UserModel.fromSupabaseUser(result.user!);
   }
 
   Future<void> signOut() async {
     await client.auth.signOut();
   }
+
+  Session? currentSession() => client.auth.currentSession;
 
   Stream<UserEntity?> getAuthStateChanges() {
     return client.auth.onAuthStateChange.map((event) {

@@ -1,3 +1,5 @@
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 import '../datasources/auth_remote_data_source.dart';
 import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -14,6 +16,9 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<void> signOut() => remote.signOut();
+
+  @override
+  Session? currentSession() => remote.currentSession();
 
   @override
   Stream<UserEntity?> getAuthStateChanges() => remote.getAuthStateChanges();

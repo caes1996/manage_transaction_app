@@ -1,12 +1,20 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get_it/get_it.dart';
+import 'package:manage_transaction_app/features/auth/data/datasources/user_remote_data_source.dart';
+import 'package:manage_transaction_app/features/auth/data/repositories/user_repository_impl.dart';
+import 'package:manage_transaction_app/features/auth/domain/repositories/user_repository.dart';
+import 'package:manage_transaction_app/features/auth/presentation/bloc/user/user_bloc.dart';
+import 'package:manage_transaction_app/features/transactions/data/datasources/transaction_remote_data_source.dart';
+import 'package:manage_transaction_app/features/transactions/data/repositories/transaction_repository_impl.dart';
+import 'package:manage_transaction_app/features/transactions/domain/repositories/transaction_repository.dart';
+import 'package:manage_transaction_app/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 // Auth
 import 'package:manage_transaction_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:manage_transaction_app/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:manage_transaction_app/features/auth/domain/repositories/auth_repository.dart';
-import 'package:manage_transaction_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 
 final sl = GetIt.instance;
 
@@ -23,4 +31,14 @@ Future<void> initDependencies() async {
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImpl(sl()));
 
   sl.registerFactory(() => AuthBloc(sl()));
+
+  // User
+  sl.registerLazySingleton<UserRemoteDataSource>(() => UserRemoteDataSource(sl()));
+  sl.registerLazySingleton<UserRepository>(() => UserRepositoryImpl(sl()));
+  sl.registerFactory(() => UserBloc(sl()));
+
+  // Transaction
+  sl.registerLazySingleton<TransactionRemoteDataSource>(() => TransactionRemoteDataSource(sl()));
+  sl.registerLazySingleton<TransactionRepository>(() => TransactionRepositoryImpl(sl()));
+  sl.registerFactory(() => TransactionBloc(sl()));
 }

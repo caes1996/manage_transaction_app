@@ -596,7 +596,7 @@ class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMix
       backgroundColor: role.color,
       side: BorderSide.none,
       label: SizedBox(
-        width: 100,
+        width: 120,
         child: Text(
           role.displayName.capitalize,
           textAlign: TextAlign.center,

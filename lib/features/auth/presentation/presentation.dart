@@ -5,6 +5,6 @@ export 'bloc/user/user_bloc.dart';
 export 'bloc/user/user_state.dart';
 // PAGES
 export 'pages/login_page.dart';
-export 'pages/users_page_stub.dart';
+export 'pages/users_page.dart';
 export 'pages/profile_settings_page.dart';
 // WIDGETS

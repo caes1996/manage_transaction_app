@@ -8,7 +8,11 @@ class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remote;
   UserRepositoryImpl(this.remote);
 
-  
+  @override
+  Future<void> createUser(UserEntity user) {
+    final model = UserModel.fromEntity(user);
+    return remote.createUser(model);
+  }
 
   @override
   Future<void> updateUser(String id, UserEntity user) {
@@ -24,4 +28,11 @@ class UserRepositoryImpl implements UserRepository {
 
   @override
   Future<List<UserEntity>> getAllUsers() => remote.getAllUsers();
+
+  @override
+  Stream<List<UserEntity>> watchUsers() {
+    return remote.streamUsers().map(
+      (models) => models.map((m) => m.toEntity()).toList(),
+    );
+  }
 }

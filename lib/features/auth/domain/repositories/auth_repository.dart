@@ -12,4 +12,5 @@ abstract class AuthRepository {
 
   Future<void> ensureCurrentUserRow();
   Future<bool> existsUserRoot();
+  Future<UserEntity?> getCurrentUserFromBd();
 }

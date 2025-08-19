@@ -39,6 +39,6 @@ Future<void> initDependencies() async {
 
   // Blocs
   sl.registerFactory(() => AuthBloc(sl()));
-  sl.registerFactory(() => UserBloc(sl()));
+  sl.registerFactory(() => UserBloc(sl(), sl()));
   sl.registerFactory(() => TransactionBloc(sl()));
 }

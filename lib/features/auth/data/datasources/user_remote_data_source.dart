@@ -46,4 +46,20 @@ class UserRemoteDataSource {
     final rows = await _usersTable.select();
     return rows.map((row) => UserModel.fromDb(row)).toList();
   }
+
+  Future<void> createUser(UserModel user) async {
+    await _usersTable.insert({
+      'id': user.id,
+      'email': user.email,
+      'name': user.name,
+      'role': user.role.name,
+    });
+  }
+
+  Stream<List<UserModel>> streamUsers() {
+    return client.schema(_schema).from(_tableName)
+      .stream(primaryKey: ['id'])
+      .map((rows) => rows.map(UserModel.fromDb)
+      .toList());
+  }
 }

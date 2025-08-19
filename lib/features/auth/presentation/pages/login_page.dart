@@ -40,16 +40,16 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(
-        child: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthError) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.message)),
-              );
-            }
-          },
+    return BlocListener<AuthBloc, AuthState>(
+      listenWhen: (prev, curr) => curr is AuthError,
+      listener: (context, state) {
+        final msg = (state as AuthError).message;
+        ScaffoldMessenger.of(context)
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(msg)));
+      },
+      child: Scaffold(
+        body: SafeArea(
           child: context.isMobile
             ? _contentMobile()
             : context.isTablet

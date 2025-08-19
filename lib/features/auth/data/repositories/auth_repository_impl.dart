@@ -42,4 +42,17 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   Future<bool> existsUserRoot() => userRemote.existsUserRoot();
+
+  @override
+  Future<UserEntity?> getCurrentUserFromBd() async {
+    final authUser = remote.client.auth.currentUser;
+    if (authUser == null) return null;
+    try {
+      return await userRemote.getUserById(authUser.id);
+    } catch (e) {
+      // ignore: avoid_print
+      print('Error al obtener el usuario: auth_repository_impl line 50: $e');
+      return remote.currentUser();
+    }
+  }
 }

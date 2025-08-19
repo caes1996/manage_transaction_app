@@ -21,4 +21,12 @@ class SignUpRequested extends AuthEvent {
   SignUpRequested(this.email, this.password, this.name, this.role);
 }
 
+class CreateUserRequested extends AuthEvent {
+  final String email;
+  final String password;
+  final String name;
+  final UserRole role;
+  CreateUserRequested(this.email, this.password, this.name, this.role);
+}
+
 class SignOutRequested extends AuthEvent {}

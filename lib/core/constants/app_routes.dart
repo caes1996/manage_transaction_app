@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:manage_transaction_app/core/layouts/app_shell.dart';
-import 'package:manage_transaction_app/features/auth/presentation/pages/splash_page.dart';
 
 import '../../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/bloc/auth/auth_bloc.dart';
@@ -48,48 +47,38 @@ class AppRouter {
   final AuthBloc _authBloc;
   final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
-  bool _isAuthKnown(AuthState? s) => s is AuthAuthenticated || s is AuthUnauthenticated || s is AuthError;
-
   GoRouter _build() {
     return GoRouter(
       navigatorKey: _navKey,
-      initialLocation: AppRoutes.splash,
-      // Refresca rutas cuando cambia el estado de autenticación
+      initialLocation: AppRoutes.login,
       refreshListenable: GoRouterRefreshStream(_authBloc.stream),
       redirect: (context, state) {
-        final authState = _authBloc.state;
-        final goingToLogin = state.matchedLocation == AppRoutes.login;
-        final goingToSplash = state.matchedLocation == AppRoutes.splash;
+        final s = _authBloc.state;
+        final loc = state.matchedLocation;
+        final goingToLogin = loc == AppRoutes.login;
 
-        // 1) Mientras no sepamos el estado, quédate en Splash
-        if (!_isAuthKnown(authState)) {
-          return goingToSplash ? null : AppRoutes.splash;
+        bool isProtected(String p) =>
+            p.startsWith(AppRoutes.dashboard) ||
+            p.startsWith(AppRoutes.transactions) ||
+            p.startsWith(AppRoutes.users) ||
+            p.startsWith(AppRoutes.settings);
+
+        if (s is AuthAuthenticated) {
+          if (goingToLogin) return AppRoutes.dashboard;
+          return null;
         }
 
-        // 2) Si está autenticado:
-        if (authState is AuthAuthenticated) {
-          // - Evita estar en Splash/Login; mándalo al Dashboard
-          if (goingToSplash || goingToLogin) return AppRoutes.dashboard;
-          return null; // continúa a lo que sea
+        if (s is AuthUnauthenticated || s is AuthError) {
+          if (!goingToLogin && isProtected(loc)) {
+            return AppRoutes.login;
+          }
+          return null;
         }
 
-        // 3) Si NO está autenticado:
-        if (authState is AuthUnauthenticated) {
-          // - Permite estar en Login o Splash
-          if (goingToLogin || goingToSplash) return null;
-          // - Bloquea rutas protegidas
-          return AppRoutes.login;
-        }
-
-        // Fallback (no debería llegar)
         return null;
       },
+
       routes: [
-        GoRoute(
-          path: AppRoutes.splash,
-          name: 'splash',
-          builder: (context, _) => const SplashPage(),
-        ),
         GoRoute(
           path: AppRoutes.login,
           name: 'login',

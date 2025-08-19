@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:manage_transaction_app/features/auth/domain/entities/user_entity.dart';
+import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
+import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_state.dart';
 
 extension BuildContextExtension on BuildContext {
   Color get primary => Theme.of(this).colorScheme.primary;
@@ -20,12 +24,21 @@ extension BuildContextExtension on BuildContext {
   double get height => MediaQuery.of(this).size.height;
 }
 
-enum SizeScreen {
-  mobile,
-  tablet,
-  desktop;
+extension UserContextExtension on BuildContext {
+  UserEntity? get currentUser {
+    return select<AuthBloc, UserEntity?>((bloc) {
+      final s = bloc.state;
+      return s is AuthAuthenticated ? s.user : null;
+    });
+  }
+
+  bool get isLoggedIn {
+    final s = read<AuthBloc>().state;
+    return s is AuthAuthenticated;
+  }
 }
 
+enum SizeScreen {mobile, tablet, desktop}
 extension SizeScreenExtension on BuildContext {
   bool get isMobile => getScreenSize() == SizeScreen.mobile;
   bool get isTablet => getScreenSize() == SizeScreen.tablet;
@@ -55,4 +68,6 @@ extension StringExtension on String {
     final regex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$');
     return regex.hasMatch(trim());
   }
+
+  String get capitalize => this[0].toUpperCase() + substring(1);
 }

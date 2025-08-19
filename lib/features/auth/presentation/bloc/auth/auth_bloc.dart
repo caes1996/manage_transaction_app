@@ -1,8 +1,10 @@
+import 'package:manage_transaction_app/features/auth/domain/entities/user_entity.dart';
+
+import 'auth_event.dart';
+import 'auth_state.dart';
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:manage_transaction_app/features/auth/data/models/user_model.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
 import '../../../domain/repositories/auth_repository.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
@@ -17,11 +19,19 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (session != null) {
           try {
             await authRepository.ensureCurrentUserRow();
-          } catch (_) {
-            // ignore: avoid_print
-            print('Error al iniciar sesión: auth_bloc line 19');
+            
+            // CAMBIO PRINCIPAL: Obtener usuario desde la base de datos
+            final userFromDB = await authRepository.getCurrentUserFromBd();
+            if (userFromDB != null) {
+              emit(AuthAuthenticated(userFromDB));
+            } else {
+              // Fallback si no se puede obtener desde DB
+              emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
+            }
+          } catch (e) {
+            print('Error al iniciar sesión: auth_bloc line 19: $e');
+            emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
           }
-          emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
         } else {
           emit(AuthUnauthenticated());
         }
@@ -31,30 +41,49 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           if (user != null) {
             try {
               await authRepository.ensureCurrentUserRow();
-            } catch (_) {
-              // ignore: avoid_print
-              print('Error al iniciar sesión: auth_bloc line 32');
+              
+              // Obtener usuario completo desde DB después del cambio de estado
+              final userFromDB = await authRepository.getCurrentUserFromBd();
+              if (userFromDB != null) {
+                add(_AuthSessionArrived(user: userFromDB));
+              } else {
+                add(_AuthSessionArrived(user: user));
+              }
+            } catch (e) {
+              print('Error al iniciar sesión: auth_bloc line 32: $e');
+              add(_AuthSessionArrived(user: user));
             }
-            add(_AuthSessionArrived(user: user));
           } else {
             add(_AuthSessionCleared());
           }
         });
 
-        final user = authRepository.currentUser();
-        if (user != null) {
+        // Verificar usuario actual al inicio
+        if (session != null) {
           try {
             await authRepository.ensureCurrentUserRow();
-          } catch (_) {
-            // ignore: avoid_print
-            print('Error al iniciar sesión: auth_bloc line 45');
+            final userFromDB = await authRepository.getCurrentUserFromBd();
+            if (userFromDB != null) {
+              emit(AuthAuthenticated(userFromDB));
+            } else {
+              final user = authRepository.currentUser();
+              if (user != null) {
+                emit(AuthAuthenticated(user));
+              } else {
+                emit(AuthUnauthenticated());
+              }
+            }
+          } catch (e) {
+            print('Error al iniciar sesión: auth_bloc line 45: $e');
+            final user = authRepository.currentUser();
+            if (user != null) {
+              emit(AuthAuthenticated(user));
+            } else {
+              emit(AuthUnauthenticated());
+            }
           }
-          emit(AuthAuthenticated(user));
-        } else {
-          emit(AuthUnauthenticated());
         }
       } catch (e) {
-        // Nunca te quedes en AuthInitial
         emit(AuthError('Error iniciando estado de sesión: $e'));
         emit(AuthUnauthenticated());
       }
@@ -63,8 +92,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<SignInRequested>((event, emit) async {
       emit(AuthLoading());
       try {
-        final user = await authRepository.signIn(event.email, event.password);
-        emit(AuthAuthenticated(user));
+        await authRepository.signIn(event.email, event.password);
+        
+        // Después del sign in, obtener el usuario completo desde la BD
+        final userFromDB = await authRepository.getCurrentUserFromBd();
+        if (userFromDB != null) {
+          emit(AuthAuthenticated(userFromDB));
+        } else {
+          final user = authRepository.currentUser();
+          if (user != null) {
+            emit(AuthAuthenticated(user));
+          } else {
+            throw Exception('No se pudo obtener información del usuario');
+          }
+        }
       } catch (e) {
         emit(AuthError('No se pudo iniciar sesión. Error: $e'));
         emit(AuthUnauthenticated());
@@ -80,11 +121,52 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(AuthUnauthenticated());
           return;
         }
-        final user = await authRepository.signUp(event.email, event.password, event.name, event.role);
-        emit(AuthAuthenticated(user));
+        
+        await authRepository.signUp(event.email, event.password, event.name, event.role);
+        
+        // Después del sign up, obtener el usuario completo desde la BD
+        final userFromDB = await authRepository.getCurrentUserFromBd();
+        if (userFromDB != null) {
+          emit(AuthAuthenticated(userFromDB));
+        } else {
+          final user = authRepository.currentUser();
+          if (user != null) {
+            emit(AuthAuthenticated(user));
+          } else {
+            throw Exception('No se pudo obtener información del usuario después del registro');
+          }
+        }
       } catch (e) {
         emit(AuthError('No se pudo crear el usuario. Error: $e'));
         emit(AuthUnauthenticated());
+      }
+    });
+
+    on<CreateUserRequested>((event, emit) async {
+      final currentState = state;
+      emit(AuthLoading());
+      
+      try {
+        final exists = await authRepository.existsUserRoot();
+        if (exists && event.role == UserRole.root) {
+          emit(AuthError('Ya existe un usuario root'));
+          // Mantener el estado anterior
+          emit(currentState);
+          return;
+        }
+        
+        await authRepository.signUp(event.email, event.password, event.name, event.role);
+        
+        // Emitir success sin cambiar a authenticated
+        emit(AuthUserCreated('Usuario creado exitosamente'));
+        
+        // Volver al estado anterior
+        emit(currentState);
+        
+      } catch (e) {
+        emit(AuthError('No se pudo crear el usuario. Error: $e'));
+        // Volver al estado anterior
+        emit(currentState);
       }
     });
 

@@ -48,13 +48,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
         );
         
         await userRepository.createUser(createdAuthUser);
-        
-        // Emitir estado de éxito que indicará al modal que se cierre
         emit(UserCreated('Usuario creado correctamente'));
-        
-        // Después de un breve momento, volver al estado de lista
-        // (aunque el stream ya debería haber actualizado)
-        await Future.delayed(const Duration(milliseconds: 100));
         
       } catch (e) {
         emit(UserError('No se pudo crear el usuario. Error: $e'));

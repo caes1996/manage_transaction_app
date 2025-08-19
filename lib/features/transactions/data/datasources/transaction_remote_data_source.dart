@@ -12,40 +12,33 @@ class TransactionRemoteDataSource {
 
   PostgrestQueryBuilder get _table => client.schema(_schema).from(_tableName);
 
-  Future<TransactionEntity> createTransaction(TransactionModel transaction) async {
+  Future<TransactionModel> createTransaction(TransactionModel transaction) async {
     final row = await _table.insert(transaction.toDbInsert()).select().single();
-    return TransactionModel.fromDb(row).toEntity();
+    return TransactionModel.fromDb(row);
   }
 
-  Future<TransactionEntity> updateTransaction(int id, TransactionModel transaction) async {
+  Future<TransactionModel> updateTransaction(int id, TransactionModel transaction) async {
     final row = await _table.update(transaction.toDbUpdate()).eq('id', id).select().single();
-    return TransactionModel.fromDb(row).toEntity();
+    return TransactionModel.fromDb(row);
   }
 
-  Future<TransactionEntity> deleteTransaction(int id) async {
+  Future<TransactionModel> deleteTransaction(int id) async {
     final row = await _table.delete().eq('id', id).select().single();
-    return TransactionModel.fromDb(row).toEntity();
+    return TransactionModel.fromDb(row);
   }
 
-  Future<TransactionEntity?> getTransactionById(int id) async {
+  Future<TransactionModel?> getTransactionById(int id) async {
     final row = await _table.select().eq('id', id).maybeSingle();
     if (row == null) return null;
-    return TransactionModel.fromDb(row).toEntity();
+    return TransactionModel.fromDb(row);
   }
 
-  Future<List<TransactionEntity>> getTransactions({
-  String orderBy = 'created_at',
-  bool ascending = false,
-  StatusTransaction? status,
-  String? userId,
-  int? limit,
-  int? offset,
-}) async {
+  Future<List<TransactionModel>> getTransactions() async {
   final query = await _table.select();
-  return query.map((row) => TransactionModel.fromDb(row).toEntity()).toList();
+  return query.map((row) => TransactionModel.fromDb(row)).toList();
 }
 
-  Stream<List<TransactionEntity>> listenTransactions({
+  Stream<List<TransactionModel>> listenTransactions({
     String? createdBy,
     StatusTransaction? status,
   }) {
@@ -56,7 +49,15 @@ class TransactionRemoteDataSource {
       final filtered = rows
           .where((r) => createdBy == null || r['created_by'] == createdBy)
           .where((r) => status == null || r['status'] == status.name);
-      return filtered.map((r) => TransactionModel.fromDb(r).toEntity()).toList();
+      return filtered.map((r) => TransactionModel.fromDb(r)).toList();
     });
+  }
+
+  Stream<List<TransactionModel>> streamTransactions() {
+    return client.schema(_schema)
+      .from(_tableName)
+      .stream(primaryKey: ['id'])
+      .map((rows) => rows.map(TransactionModel.fromDb)
+      .toList());
   }
 }

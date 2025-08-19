@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hugeicons/hugeicons.dart';
 import 'package:manage_transaction_app/features/auth/domain/entities/user_entity.dart';
 import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
 import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_state.dart';
+import 'package:manage_transaction_app/features/transactions/domain/entities/transaction_entity.dart';
 
 extension BuildContextExtension on BuildContext {
   Color get primary => Theme.of(this).colorScheme.primary;
@@ -70,4 +72,24 @@ extension StringExtension on String {
   }
 
   String get capitalize => this[0].toUpperCase() + substring(1);
+}
+
+extension StatusTransactionExtension on StatusTransaction {
+  String get displayName => switch (this) {
+    StatusTransaction.pending => 'Pendiente',
+    StatusTransaction.approved => 'Aprobada', 
+    StatusTransaction.rejected => 'Rechazada',
+  };
+  
+  Color get color => switch (this) {
+    StatusTransaction.pending => const Color(0xFFF59E0B),
+    StatusTransaction.approved => const Color(0xFF10B981),
+    StatusTransaction.rejected => const Color(0xFFEF4444),
+  };
+  
+  IconData get icon => switch (this) {
+    StatusTransaction.pending => HugeIcons.strokeRoundedClock01,
+    StatusTransaction.approved => HugeIcons.strokeRoundedCheckmarkCircle02,
+    StatusTransaction.rejected => HugeIcons.strokeRoundedCancel01,
+  };
 }

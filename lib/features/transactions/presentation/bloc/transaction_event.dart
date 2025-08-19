@@ -29,19 +29,17 @@ class GetTransactionByIdRequested extends TransactionEvent {
 }
 
 class GetTransactionsRequested extends TransactionEvent {
-  final String orderBy;
-  final bool ascending;
-  final StatusTransaction? status;
-  final String? userId;
-  final int? limit;
-  final int? offset;
-  GetTransactionsRequested({
-    this.orderBy = 'created_at',
-    this.ascending = false,
-    this.status,
-    this.userId,
-    this.limit,
-    this.offset,
-  });
+  GetTransactionsRequested();
 }
 
+class TransactionsWatchRequested extends TransactionEvent {}
+
+class TransactionsStopWatching extends TransactionEvent {}
+
+class TransactionsStreamEmitted extends TransactionEvent {
+  final List<TransactionEntity> transactions;
+  TransactionsStreamEmitted(this.transactions);
+
+  @override
+  List<Object?> get props => [transactions];
+}

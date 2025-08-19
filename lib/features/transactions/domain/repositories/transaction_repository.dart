@@ -5,12 +5,6 @@ abstract class TransactionRepository {
   Future<void> updateTransaction(int id, TransactionEntity transaction);
   Future<void> deleteTransaction(int id);
   Future<TransactionEntity?> getTransactionById(int id);
-  Future<List<TransactionEntity>> getTransactions({
-    String orderBy = 'created_at',
-    bool ascending = false,
-    StatusTransaction? status,
-    String? userId,
-    int? limit,
-    int? offset,
-  });
+  Future<List<TransactionEntity>> getTransactions();
+  Stream<List<TransactionEntity>> watchTransactions();
 }

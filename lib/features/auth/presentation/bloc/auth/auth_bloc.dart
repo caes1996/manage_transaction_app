@@ -29,6 +29,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
             }
           } catch (e) {
+            // ignore: avoid_print
             print('Error al iniciar sesión: auth_bloc line 19: $e');
             emit(AuthAuthenticated(UserModel.fromSupabaseUser(session.user)));
           }
@@ -50,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
                 add(_AuthSessionArrived(user: user));
               }
             } catch (e) {
+              // ignore: avoid_print
               print('Error al iniciar sesión: auth_bloc line 32: $e');
               add(_AuthSessionArrived(user: user));
             }
@@ -74,6 +76,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
               }
             }
           } catch (e) {
+            // ignore: avoid_print
             print('Error al iniciar sesión: auth_bloc line 45: $e');
             final user = authRepository.currentUser();
             if (user != null) {

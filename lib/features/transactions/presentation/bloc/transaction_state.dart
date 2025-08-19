@@ -6,6 +6,8 @@ abstract class TransactionState extends Equatable {
   List<Object?> get props => [];
 }
 
+class TransactionInitial extends TransactionState {}
+
 class TransactionLoading extends TransactionState {}
 
 class TransactionLoaded extends TransactionState {
@@ -16,30 +18,6 @@ class TransactionLoaded extends TransactionState {
   List<Object?> get props => [transaction];
 }
 
-class TransactionCreated extends TransactionState {
-  final TransactionEntity transaction;
-  TransactionCreated(this.transaction);
-
-  @override
-  List<Object?> get props => [transaction];
-}
-
-class TransactionUpdated extends TransactionState {
-  final TransactionEntity transaction;
-  TransactionUpdated(this.transaction);
-
-  @override
-  List<Object?> get props => [transaction];
-}
-
-class TransactionDeleted extends TransactionState {
-  final int id;
-  TransactionDeleted(this.id);
-
-  @override
-  List<Object?> get props => [id];
-}
-
 class TransactionsLoaded extends TransactionState {
   final List<TransactionEntity> transactions;
   TransactionsLoaded(this.transactions);
@@ -48,10 +26,45 @@ class TransactionsLoaded extends TransactionState {
   List<Object?> get props => [transactions];
 }
 
+class TransactionCreated extends TransactionState {
+  final String message;
+  final bool shouldCloseModal;
+  TransactionCreated(this.message, {this.shouldCloseModal = true});
+
+  @override
+  List<Object?> get props => [message, shouldCloseModal];
+}
+
+class TransactionUpdated extends TransactionState {
+  final String message;
+  final bool shouldCloseModal;
+  TransactionUpdated(this.message, {this.shouldCloseModal = true});
+
+  @override
+  List<Object?> get props => [message, shouldCloseModal];
+}
+
+class TransactionDeleted extends TransactionState {
+  final String message;
+  final bool shouldCloseModal;
+  TransactionDeleted(this.message, {this.shouldCloseModal = true});
+
+  @override
+  List<Object?> get props => [message, shouldCloseModal];
+}
+
 class TransactionError extends TransactionState {
   final String message;
   TransactionError(this.message);
 
   @override
   List<Object?> get props => [message];
+}
+
+class TransactionOperationLoading extends TransactionState {
+  final String operation;
+  TransactionOperationLoading(this.operation);
+
+  @override
+  List<Object?> get props => [operation];
 }

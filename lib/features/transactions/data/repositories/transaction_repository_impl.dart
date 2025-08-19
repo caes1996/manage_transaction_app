@@ -27,12 +27,12 @@ class TransactionRepositoryImpl implements TransactionRepository {
   Future<TransactionEntity?> getTransactionById(int id) => remote.getTransactionById(id);
 
   @override
-  Future<List<TransactionEntity>> getTransactions({
-    String orderBy = 'created_at',
-    bool ascending = false,
-    StatusTransaction? status,
-    String? userId,
-    int? limit,
-    int? offset,
-  }) => remote.getTransactions(orderBy: orderBy, ascending: ascending, status: status, userId: userId, limit: limit, offset: offset);
+  Future<List<TransactionEntity>> getTransactions() => remote.getTransactions();
+
+  @override
+  Stream<List<TransactionEntity>> watchTransactions() {
+    return remote.streamTransactions().map(
+      (models) => models.map((m) => m.toEntity()).toList(),
+    );
+  }
 }

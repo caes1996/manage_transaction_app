@@ -14,6 +14,7 @@ class CustomButton extends StatefulWidget {
     this.leading,
     this.trailing,
     this.radius = 12,
+    this.color,
   });
 
   final void Function()? onTap;
@@ -26,6 +27,7 @@ class CustomButton extends StatefulWidget {
   final Widget? leading;
   final Widget? trailing;
   final double radius;
+  final Color? color;
 
   @override
   State<CustomButton> createState() => _CustomButtonState();
@@ -80,11 +82,11 @@ class _CustomButtonState extends State<CustomButton> {
       border = BorderSide(color: disabled ? context.onSurface.withValues(alpha: 0.3) : context.primary, width: 1.2);
     } else {
       double base = disabled ? 0.45 : (_pressed ? 0.95 : (_hovered ? 1.0 : 1.0));
-      bg = context.primary.withValues(alpha: base);
+      bg = widget.color ?? context.primary.withValues(alpha: base);
       border = const BorderSide(color: Colors.transparent, width: 0);
       shadow = [
         if (!disabled && (_hovered || _pressed))
-          BoxShadow(color: context.primary.withValues(alpha: 0.25), blurRadius: 12, offset: const Offset(0, 6)),
+          BoxShadow(color: widget.color ?? context.primary.withValues(alpha: 0.25), blurRadius: 12, offset: const Offset(0, 6)),
       ];
     }
 
@@ -97,7 +99,7 @@ class _CustomButtonState extends State<CustomButton> {
   }
 
   Widget _buildLoader(BuildContext context) {
-    final color = widget.outline ? context.primary : context.onPrimary;
+    final color = widget.outline ? widget.color ?? context.primary : context.onPrimary;
     return SizedBox(
       height: 22,
       width: 22,
@@ -108,7 +110,7 @@ class _CustomButtonState extends State<CustomButton> {
   Widget _buildContent(BuildContext context) {
     final textColor = widget.isDisabled
         ? Colors.grey.withValues(alpha: 0.6)
-        : (widget.outline ? context.primary : context.onPrimary);
+        : (widget.outline ? widget.color ?? context.primary : context.onPrimary);
 
     final children = <Widget>[
       if (widget.leading != null) ...[

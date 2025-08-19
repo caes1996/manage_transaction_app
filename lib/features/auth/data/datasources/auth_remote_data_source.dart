@@ -30,9 +30,7 @@ class AuthRemoteDataSource {
     return UserModel.fromSupabaseUser(result.user!);
   }
 
-  Future<void> signOut() async {
-    await client.auth.signOut();
-  }
+  Future<void> signOut() async => await client.auth.signOut();
 
   Session? currentSession() => client.auth.currentSession;
 

@@ -12,14 +12,14 @@ import 'package:manage_transaction_app/features/auth/presentation/bloc/user/user
 import 'package:manage_transaction_app/features/auth/presentation/widgets/user_form_modal.dart';
 import 'package:manage_transaction_app/features/design_system/inpust.dart';
 
-class UsersPageStub extends StatefulWidget {
-  const UsersPageStub({super.key});
+class UsersPage extends StatefulWidget {
+  const UsersPage({super.key});
 
   @override
-  State<UsersPageStub> createState() => _UsersPageStubState();
+  State<UsersPage> createState() => _UsersPageState();
 }
 
-class _UsersPageStubState extends State<UsersPageStub> with SingleTickerProviderStateMixin {
+class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
   String _searchQuery = '';
@@ -450,7 +450,7 @@ class _UsersPageStubState extends State<UsersPageStub> with SingleTickerProvider
     );
   }
 
-  Widget _buildUsersGrid(List<dynamic> users, {required int crossAxisCount, required double childAspectRatio}) {
+  Widget _buildUsersGrid(List<UserEntity> users, {required int crossAxisCount, required double childAspectRatio}) {
     final filteredUsers = _getFilteredUsers(users);
 
     if (filteredUsers.isEmpty) {
@@ -471,7 +471,7 @@ class _UsersPageStubState extends State<UsersPageStub> with SingleTickerProvider
     );
   }
 
-  Widget _buildUsersList(List<dynamic> users, {required double itemPadding}) {
+  Widget _buildUsersList(List<UserEntity> users, {required double itemPadding}) {
     final filteredUsers = _getFilteredUsers(users);
 
     if (filteredUsers.isEmpty) {
@@ -592,20 +592,16 @@ class _UsersPageStubState extends State<UsersPageStub> with SingleTickerProvider
   }
 
   Widget _buildRoleChip(UserRole role) {
-    final colorChip = switch (role) {
-      UserRole.root => const Color(0xFFC52E23),
-      UserRole.admin => const Color(0xFF197DCF),
-      UserRole.transactional => const Color(0xFF1F7A22),
-    };
     return Chip(
-      backgroundColor: colorChip,
+      backgroundColor: role.color,
+      side: BorderSide.none,
       label: SizedBox(
-        width: 80,
+        width: 100,
         child: Text(
-          role.name.capitalize,
+          role.displayName.capitalize,
           textAlign: TextAlign.center,
           style: context.bodySmall.copyWith(
-            color: colorChip.contrast,
+            color: role.color.contrast,
           ),
         ),
       ),
@@ -821,11 +817,12 @@ class _UsersPageStubState extends State<UsersPageStub> with SingleTickerProvider
 
   // ===================== MÉTODOS AUXILIARES =====================
 
-  List<UserEntity> _getFilteredUsers(List<dynamic> users) {
+  List<UserEntity> _getFilteredUsers(List<UserEntity> users) {
     return users.where((user) {
       return user.name.toLowerCase().contains(_searchQuery) ||
-             user.email.toLowerCase().contains(_searchQuery);
-    }).cast<UserEntity>().toList();
+             user.email.toLowerCase().contains(_searchQuery) ||
+             user.role.displayName.toLowerCase().contains(_searchQuery);
+    }).toList();
   }
 
   void _showUserDetails(UserEntity user) {

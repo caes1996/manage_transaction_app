@@ -11,14 +11,14 @@ import 'package:manage_transaction_app/features/transactions/presentation/widget
 import 'package:manage_transaction_app/features/design_system/inpust.dart';
 import 'package:manage_transaction_app/features/transactions/presentation/widgets/transaction_modal_form.dart';
 
-class TransactionsPageStub extends StatefulWidget {
-  const TransactionsPageStub({super.key});
+class TransactionsPage extends StatefulWidget {
+  const TransactionsPage({super.key});
 
   @override
-  State<TransactionsPageStub> createState() => _TransactionsPageStubState();
+  State<TransactionsPage> createState() => _TransactionsPageState();
 }
 
-class _TransactionsPageStubState extends State<TransactionsPageStub> 
+class _TransactionsPageState extends State<TransactionsPage> 
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _fadeAnimation;
@@ -69,8 +69,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
       },
     );
   }
-
-  // ===================== VISTAS RESPONSIVAS =====================
 
   Widget _buildDesktopView(TransactionState state) {
     return Scaffold(
@@ -124,8 +122,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
       ),
     );
   }
-
-  // ===================== COMPONENTES DE HEADER =====================
 
   Widget _buildDesktopHeader() {
     return Container(
@@ -340,8 +336,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
     );
   }
 
-  // ===================== FILTROS Y CONTROLES =====================
-
   Widget _buildFiltersBar() {
     return Container(
       padding: EdgeInsets.symmetric(
@@ -434,7 +428,7 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
 
   Widget _buildButtonCreateTransaction() {
     return SizedBox(
-      width: context.isMobile ? 120 : 230,
+      width: context.isMobile ? 120 : 240,
       child: CustomButton(
         label: 'Crear transacción',
         leading: Icon(HugeIcons.strokeRoundedAdd01, color: context.onPrimary),
@@ -451,8 +445,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
       child: const Icon(HugeIcons.strokeRoundedAdd01),
     );
   }
-
-  // ===================== CONTENIDO ESPECÍFICO =====================
 
   Widget _buildDesktopContent(TransactionState state) {
     if (state is TransactionLoading) return _buildLoadingState();
@@ -499,8 +491,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
 
     return _buildDefaultState();
   }
-
-  // ===================== LISTAS Y GRILLAS =====================
 
   Widget _buildTransactionsGrid(List<dynamic> transactions, {required int crossAxisCount, required double childAspectRatio}) {
     final filteredTransactions = _getFilteredTransactions(transactions);
@@ -728,8 +718,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
     );
   }
 
-  // ===================== ESTADOS DE LA UI =====================
-
   Widget _buildEmptyState() {
     return Center(
       child: Column(
@@ -911,8 +899,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
     );
   }
 
-  // ===================== MÉTODOS AUXILIARES =====================
-
   List<TransactionEntity> _getFilteredTransactions(List<dynamic> transactions) {
     return transactions.where((transaction) {
       final matchesSearch = transaction.title.toLowerCase().contains(_searchQuery) ||
@@ -948,8 +934,6 @@ class _TransactionsPageStubState extends State<TransactionsPageStub>
     ModalHelper.showTransactionDetailModal(context, transaction);
   }
 }
-
-// ===================== MODAL HELPERS =====================
 
 class ModalHelper {
   static Future<void> showTransactionFormModal(BuildContext context) {

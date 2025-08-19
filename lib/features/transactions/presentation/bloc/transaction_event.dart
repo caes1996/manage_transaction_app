@@ -18,16 +18,6 @@ class UpdateTransactionRequested extends TransactionEvent {
   UpdateTransactionRequested(this.id, this.transaction);
 }
 
-class DeleteTransactionRequested extends TransactionEvent {
-  final int id;
-  DeleteTransactionRequested(this.id);
-}
-
-class GetTransactionByIdRequested extends TransactionEvent {
-  final int id;
-  GetTransactionByIdRequested(this.id);
-}
-
 class GetTransactionsRequested extends TransactionEvent {
   GetTransactionsRequested();
 }

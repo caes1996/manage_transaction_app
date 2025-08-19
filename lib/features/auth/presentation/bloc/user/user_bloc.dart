@@ -55,28 +55,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
-    // Actualizar usuario
-    on<UpdateUserRequested>((event, emit) async {
-      emit(UserOperationLoading('updating'));
-      try {
-        await userRepository.updateUser(event.userId, event.user);
-        emit(UserUpdated('Usuario actualizado correctamente'));
-      } catch (e) {
-        emit(UserError('No se pudo actualizar el usuario. Error: $e'));
-      }
-    });
-
-    // Eliminar usuario
-    on<DeleteUserRequested>((event, emit) async {
-      emit(UserOperationLoading('deleting'));
-      try {
-        await userRepository.deleteUser(event.userId);
-        emit(UserDeleted('Usuario eliminado correctamente'));
-      } catch (e) {
-        emit(UserError('No se pudo eliminar el usuario. Error: $e'));
-      }
-    });
-
     // Realtime: iniciar observación
     on<UsersWatchRequested>((event, emit) async {
       if (_usersSub != null) return; // Ya está observando

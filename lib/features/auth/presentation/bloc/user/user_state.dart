@@ -38,25 +38,6 @@ class UserCreated extends UserState {
   List<Object?> get props => [message, shouldCloseModal];
 }
 
-class UserUpdated extends UserState {
-  final String message;
-  final bool shouldCloseModal;
-  
-  UserUpdated(this.message, {this.shouldCloseModal = true});
-  
-  @override
-  List<Object?> get props => [message, shouldCloseModal];
-}
-
-class UserDeleted extends UserState {
-  final String message;
-  
-  UserDeleted(this.message);
-  
-  @override
-  List<Object?> get props => [message];
-}
-
 class UserError extends UserState {
   final String message;
   UserError(this.message);

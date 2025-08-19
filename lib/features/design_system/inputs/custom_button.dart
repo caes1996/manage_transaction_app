@@ -148,8 +148,8 @@ class _CustomButtonState extends State<CustomButton> {
 
   double _fontSizeFor(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    if (w >= 1200) return 16; // desktop
-    if (w >= 600) return 15; // tablet
-    return 14; // phone
+    if (w >= 1200) return 16;
+    if (w >= 600) return 15;
+    return 14;
   }
 }

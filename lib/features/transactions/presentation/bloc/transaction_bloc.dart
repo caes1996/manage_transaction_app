@@ -33,30 +33,6 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       }
     });
 
-    on<DeleteTransactionRequested>((event, emit) async {
-      emit(TransactionOperationLoading('deleting'));
-      try {
-        await transactionRepository.deleteTransaction(event.id);
-        emit(TransactionDeleted('Transacción eliminada correctamente'));
-      } catch (e) {
-        emit(TransactionError('No se pudo eliminar la transacción. Error: $e'));
-      }
-    });
-
-    on<GetTransactionByIdRequested>((event, emit) async {
-      emit(TransactionLoading());
-      try {
-        final transaction = await transactionRepository.getTransactionById(event.id);
-        if (transaction == null) {
-          emit(TransactionError('No se pudo obtener la transacción.'));
-          return;
-        }
-        emit(TransactionLoaded(transaction));
-      } catch (e) {
-        emit(TransactionError('No se pudo obtener la transacción. Error: $e'));
-      }
-    });
-
     on<GetTransactionsRequested>((event, emit) async {
       emit(TransactionLoading());
       try {

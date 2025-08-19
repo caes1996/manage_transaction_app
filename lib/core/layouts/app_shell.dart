@@ -11,25 +11,17 @@ class AppShell extends StatelessWidget {
   int _indexFromPath(String location) {
     if (location.startsWith(AppRoutes.transactions)) return 0;
     if (location.startsWith(AppRoutes.users)) return 1;
-    if (location.startsWith(AppRoutes.settings)) return 2;
-    if (location.startsWith(AppRoutes.dashboard)) return 3;
-    return 3; // Default to dashboard
+    if (location.startsWith(AppRoutes.profile)) return 2;
+    if (location.startsWith(AppRoutes.settings)) return 3;
+    return 0;
   }
 
   void _goTo(int i, BuildContext context) {
     switch (i) {
-      case 0:
-        context.go(AppRoutes.transactions);
-        break;
-      case 1:
-        context.go(AppRoutes.users);
-        break;
-      case 2:
-        context.go(AppRoutes.settings);
-        break;
-      case 3:
-        context.go(AppRoutes.dashboard);
-        break;
+      case 0: context.go(AppRoutes.transactions); break;
+      case 1: context.go(AppRoutes.users); break;
+      case 2: context.go(AppRoutes.profile); break;
+      case 3: context.go(AppRoutes.settings); break;
     }
   }
 
@@ -41,8 +33,7 @@ class AppShell extends StatelessWidget {
       shadowColor: context.primary.withValues(alpha: 0.1),
       title: Text(
         'Manage Transaction App',
-        style: TextStyle(
-          fontFamily: 'Poppins',
+        style: context.titleLarge.copyWith(
           fontSize: context.isDesktop ? 22 : 20,
           fontWeight: FontWeight.w600,
           color: context.secondary,
@@ -97,6 +88,17 @@ class AppShell extends StatelessWidget {
           ),
           NavigationDestination(
             icon: Icon(
+              HugeIcons.strokeRoundedUserMultiple02,
+              color: context.primary.withValues(alpha: 0.7),
+            ),
+            selectedIcon: Icon(
+              HugeIcons.strokeRoundedUserMultiple02,
+              color: context.primary,
+            ),
+            label: 'Perfil',
+          ),
+          NavigationDestination(
+            icon: Icon(
               HugeIcons.strokeRoundedSettings04,
               color: context.primary.withValues(alpha: 0.7),
             ),
@@ -105,17 +107,6 @@ class AppShell extends StatelessWidget {
               color: context.primary,
             ),
             label: 'Configuración',
-          ),
-          NavigationDestination(
-            icon: Icon(
-              HugeIcons.strokeRoundedDashboardSquare02,
-              color: context.primary.withValues(alpha: 0.7),
-            ),
-            selectedIcon: Icon(
-              HugeIcons.strokeRoundedDashboardSquare02,
-              color: context.primary,
-            ),
-            label: 'Dashboard',
           ),
         ],
       ),
@@ -141,23 +132,13 @@ class AppShell extends StatelessWidget {
         labelType: context.isTablet 
             ? NavigationRailLabelType.selected 
             : NavigationRailLabelType.none,
-        selectedIconTheme: IconThemeData(
-          color: context.primary,
-          size: 28,
-        ),
-        unselectedIconTheme: IconThemeData(
-          color: context.primary.withValues(alpha: 0.7),
-          size: 24,
-        ),
-        selectedLabelTextStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 14,
+        selectedIconTheme: IconThemeData(color: context.primary, size: 28),
+        unselectedIconTheme: IconThemeData(color: context.primary.withValues(alpha: 0.7), size: 24),
+        selectedLabelTextStyle: context.bodySmall.copyWith(
           fontWeight: FontWeight.w500,
           color: context.primary,
         ),
-        unselectedLabelTextStyle: TextStyle(
-          fontFamily: 'Poppins',
-          fontSize: 14,
+        unselectedLabelTextStyle: context.bodySmall.copyWith(
           fontWeight: FontWeight.w400,
           color: context.secondary.withValues(alpha: 0.7),
         ),
@@ -176,18 +157,16 @@ class AppShell extends StatelessWidget {
                   shape: BoxShape.circle,
                 ),
                 child: Icon(
-                  HugeIcons.strokeRoundedHome01,
+                  HugeIcons.strokeRoundedUserAccount,
                   color: context.primary,
-                  size: context.isDesktop ? 24 : 20,
+                  size: context.isDesktop ? 36 : 24,
                 ),
               ),
               if (context.isDesktop) ...[
                 const SizedBox(height: 8),
                 Text(
                   'Dashboard',
-                  style: TextStyle(
-                    fontFamily: 'Poppins',
-                    fontSize: 12,
+                  style: context.bodySmall.copyWith(
                     fontWeight: FontWeight.w500,
                     color: context.primary,
                   ),
@@ -208,14 +187,14 @@ class AppShell extends StatelessWidget {
             label: const Text('Usuarios'),
           ),
           NavigationRailDestination(
+            icon: const Icon(HugeIcons.strokeRoundedUserMultiple02),
+            selectedIcon: const Icon(HugeIcons.strokeRoundedUserMultiple02),
+            label: const Text('Perfil'),
+          ),
+          NavigationRailDestination(
             icon: const Icon(HugeIcons.strokeRoundedSettings04),
             selectedIcon: const Icon(HugeIcons.strokeRoundedSettings04),
             label: const Text('Configuración'),
-          ),
-          NavigationRailDestination(
-            icon: const Icon(HugeIcons.strokeRoundedDashboardSquare02),
-            selectedIcon: const Icon(HugeIcons.strokeRoundedDashboardSquare02),
-            label: const Text('Dashboard'),
           ),
         ],
       ),

@@ -3,15 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:manage_transaction_app/core/layouts/app_shell.dart';
-
-import '../../../features/auth/presentation/pages/login_page.dart';
-import '../../features/auth/presentation/bloc/auth/auth_bloc.dart';
-import '../../features/auth/presentation/bloc/auth/auth_state.dart';
-
-import '../../../features/transactions/presentation/pages/transactions_page_stub.dart';
-import '../../../features/auth/presentation/pages/users_page_stub.dart';
-import '../../../features/dashboard/presentation/pages/dashboard_page_stub.dart';
-import '../../../features/settings/presentation/settings_home_page.dart';
+import 'package:manage_transaction_app/features/auth/presentation/presentation.dart';
+import 'package:manage_transaction_app/features/design_system/inputs/custom_button.dart';
+import 'package:manage_transaction_app/features/transactions/presentation/presentation.dart';
+import 'package:manage_transaction_app/features/settings/presentation/settings_home_page.dart';
 
 class GoRouterRefreshStream extends ChangeNotifier {
   GoRouterRefreshStream(Stream<dynamic> stream) {
@@ -29,19 +24,16 @@ class GoRouterRefreshStream extends ChangeNotifier {
 }
 
 class AppRoutes {
-  static const splash = '/splash';
   static const login = '/login';
-  static const dashboard = '/dashboard';
   static const transactions = '/transactions';
   static const users = '/users';
+  static const profile = '/profile';
   static const settings = '/settings';
-  static String settingsSection(String id) => '/settings/$id';
 }
 
 class AppRouter {
   AppRouter._(this._authBloc);
 
-  /// Crea el router inyectando el AuthBloc (¡clave para conservar sesión!).
   static GoRouter create(AuthBloc authBloc) => AppRouter._(authBloc)._build();
 
   final AuthBloc _authBloc;
@@ -58,13 +50,12 @@ class AppRouter {
         final goingToLogin = loc == AppRoutes.login;
 
         bool isProtected(String p) =>
-            p.startsWith(AppRoutes.dashboard) ||
             p.startsWith(AppRoutes.transactions) ||
             p.startsWith(AppRoutes.users) ||
             p.startsWith(AppRoutes.settings);
 
         if (s is AuthAuthenticated) {
-          if (goingToLogin) return AppRoutes.dashboard;
+          if (goingToLogin) return AppRoutes.transactions;
           return null;
         }
 
@@ -79,57 +70,27 @@ class AppRouter {
       },
 
       routes: [
-        GoRoute(
-          path: AppRoutes.login,
-          name: 'login',
-          builder: (context, _) => const LoginPage(),
-        ),
-        ShellRoute(
-          builder: (context, state, child) => AppShell(child: child),
+        GoRoute(path: AppRoutes.login, name: 'login', builder: (context, _) => const LoginPage()),
+        ShellRoute(builder: (context, state, child) => AppShell(child: child),
           routes: [
-            GoRoute(
-              path: AppRoutes.dashboard,
-              name: 'dashboard',
-              builder: (context, _) => const DashboardPageStub(),
-            ),
-            GoRoute(
-              path: AppRoutes.transactions,
-              name: 'transactions',
-              builder: (context, _) => const TransactionsPageStub(),
-            ),
-            GoRoute(
-              path: AppRoutes.users,
-              name: 'users',
-              builder: (context, _) => const UsersPageStub(),
-            ),
-            GoRoute(
-              path: AppRoutes.settings,
-              name: 'settings',
-              builder: (context, _) => const SettingsHomePage(),
-            ),
-            GoRoute(
-              path: '/settings/:sectionId',
-              name: 'settings-section',
-              builder: (context, state) {
-                final id = state.pathParameters['sectionId']!;
-                return SettingsSectionPage(id: id);
-              },
-            ),
+            GoRoute(path: AppRoutes.transactions, name: 'transactions', builder: (context, _) => const TransactionsPage()),
+            GoRoute(path: AppRoutes.users, name: 'users', builder: (context, _) => const UsersPage()),
+            GoRoute(path: AppRoutes.profile, name: 'profile', builder: (context, _) => const ProfilePage()),
+            GoRoute(path: AppRoutes.settings, name: 'settings', builder: (context, _) => const SettingsHomePage()),
           ],
         ),
       ],
       errorBuilder: (context, state) => Scaffold(
         body: Center(
           child: Column(
+            spacing: 12,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Icon(HugeIcons.strokeRoundedAlertCircle, size: 64, color: Colors.red),
-              const SizedBox(height: 12),
               Text('${state.error}'),
-              const SizedBox(height: 12),
-              ElevatedButton(
-                onPressed: () => context.go(AppRoutes.login),
-                child: const Text('Ir al inicio'),
+              CustomButton(
+                label: 'Ir al inicio',
+                onTap: () => context.go(AppRoutes.login),
               ),
             ],
           ),

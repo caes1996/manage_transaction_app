@@ -27,35 +27,34 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
   String _origin = '';
   String _destination = '';
 
-  // Variables responsivas según el contexto
   double _getModalWidth(BuildContext context) {
     if (context.isMobile) return MediaQuery.of(context).size.width * 0.95;
     if (context.isTablet) return 600.0;
-    return 550.0; // Desktop
+    return 550.0;
   }
 
   EdgeInsets _getModalPadding(BuildContext context) {
     if (context.isMobile) return const EdgeInsets.all(16.0);
     if (context.isTablet) return const EdgeInsets.all(24.0);
-    return const EdgeInsets.all(32.0); // Desktop
+    return const EdgeInsets.all(32.0);
   }
 
   double _getFieldSpacing(BuildContext context) {
     if (context.isMobile) return 12.0;
     if (context.isTablet) return 16.0;
-    return 20.0; // Desktop
+    return 20.0;
   }
 
   double _getTitleSize(BuildContext context) {
     if (context.isMobile) return 20.0;
     if (context.isTablet) return 22.0;
-    return 24.0; // Desktop
+    return 24.0;
   }
 
   double _getButtonHeight(BuildContext context) {
     if (context.isMobile) return 45.0;
     if (context.isTablet) return 48.0;
-    return 52.0; // Desktop
+    return 52.0;
   }
 
   @override
@@ -92,7 +91,6 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
                 Colors.green,
                 Icons.check_circle,
               );
-              // Cerrar el modal después de un breve delay
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
                   // ignore: use_build_context_synchronously
@@ -141,11 +139,10 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
   Widget _buildHeader(BuildContext context, TransactionState state) {
     return Column(
       children: [
-        // Header con título y botón de cierre
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(width: 40), // Espaciado
+            const SizedBox(width: 40),
             Expanded(
               child: Text(
                 'Nueva Transacción',
@@ -280,7 +277,6 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
     final isLoading = _isLoading(state);
     
     if (context.isMobile) {
-      // En móvil, botones apilados verticalmente
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -307,7 +303,6 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
         ],
       );
     } else {
-      // En tablet/desktop, botones en fila
       return Row(
         children: [
           Expanded(
@@ -339,7 +334,6 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
     }
   }
 
-  // Método auxiliar para verificar si está cargando
   bool _isLoading(TransactionState state) {
     return state is TransactionLoading;
   }
@@ -349,20 +343,19 @@ class _TransactionFormModalState extends State<TransactionFormModal> {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
       
-      // Obtener el usuario actual autenticado
       final authState = context.read<AuthBloc>().state;
       if (authState is AuthAuthenticated) {
         final userId = authState.user.id;
         
         final transaction = TransactionEntity(
-          id: 0, // Se generará automáticamente en el backend
+          id: 0,
           title: _title,
           concept: _concept,
           amount: _amount,
           origin: _origin,
           destination: _destination,
           createdBy: userId,
-          status: StatusTransaction.pending, // Nueva transacción siempre es pendiente
+          status: StatusTransaction.pending,
           createdAt: DateTime.now(),
         );
         

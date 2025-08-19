@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:manage_transaction_app/core/constants/app_routes.dart';
+import 'package:manage_transaction_app/core/constants/app_theme.dart';
 import 'package:manage_transaction_app/features/auth/presentation/bloc/user/user_bloc.dart';
 import 'package:manage_transaction_app/features/transactions/presentation/bloc/transaction_bloc.dart';
 import 'package:manage_transaction_app/main.dart';
@@ -31,15 +32,9 @@ class ManageTransactionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthBloc>(
-          create: (_) => sl<AuthBloc>()..add(AuthStarted()),
-        ),
-        BlocProvider<UserBloc>(
-          create: (_) => sl<UserBloc>()
-        ),
-        BlocProvider<TransactionBloc>(
-          create: (_) => sl<TransactionBloc>()
-        ),
+        BlocProvider<AuthBloc>(create: (_) => sl<AuthBloc>()..add(AuthStarted())),
+        BlocProvider<UserBloc>(create: (_) => sl<UserBloc>()),
+        BlocProvider<TransactionBloc>(create: (_) => sl<TransactionBloc>()),
       ],
       child: Builder(
         builder: (context) {
@@ -52,10 +47,7 @@ class ManageTransactionApp extends StatelessWidget {
               title: 'Manage Transaction App',
               debugShowCheckedModeBanner: false,
               routerConfig: router,
-              theme: ThemeData(
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-                useMaterial3: true,
-              ),
+              theme: themeData,
             ),
           );
         },

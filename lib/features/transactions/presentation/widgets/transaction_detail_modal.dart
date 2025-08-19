@@ -37,29 +37,28 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
   final Color _approvedColor = const Color(0xFF10B981);
   final Color _rejectedColor = const Color(0xFFEF4444);
 
-  // Variables responsivas
   double _getModalWidth(BuildContext context) {
     if (context.isMobile) return MediaQuery.of(context).size.width * 0.95;
     if (context.isTablet) return 650.0;
-    return 600.0; // Desktop
+    return 600.0;
   }
 
   EdgeInsets _getModalPadding(BuildContext context) {
     if (context.isMobile) return const EdgeInsets.all(20.0);
     if (context.isTablet) return const EdgeInsets.all(28.0);
-    return const EdgeInsets.all(32.0); // Desktop
+    return const EdgeInsets.all(32.0);
   }
 
   double _getTitleSize(BuildContext context) {
     if (context.isMobile) return 22.0;
     if (context.isTablet) return 24.0;
-    return 26.0; // Desktop
+    return 26.0;
   }
 
   double _getButtonHeight(BuildContext context) {
     if (context.isMobile) return 48.0;
     if (context.isTablet) return 52.0;
-    return 56.0; // Desktop
+    return 56.0;
   }
 
   @override
@@ -103,7 +102,6 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
             Colors.green,
             Icons.check_circle,
           );
-          // Cerrar el modal después de un breve delay
           Future.delayed(const Duration(milliseconds: 1000), () {
             if (mounted) {
               // ignore: use_build_context_synchronously
@@ -422,31 +420,153 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
                 Utils.formatDate(widget.transaction.createdAt),
                 HugeIcons.strokeRoundedCalendar03,
               ),
-              _buildInfoRow(
-                'Creado por',
-                'Usuario ID: ${widget.transaction.createdBy}',
-                HugeIcons.strokeRoundedUser,
-              ),
+              _buildCreatedByInfo(context, widget.transaction.createdBy),
               if (widget.transaction.approvedBy != null)
-                BlocBuilder<UserBloc, UserState>(
-                  builder: (context, state) {
-                    if (state is UserLoaded) {
-                      context.read<UserBloc>().add(GetUserByIdRequested(widget.transaction.approvedBy!));
-                      return _buildInfoRow(
-                        'Aprobado por',
-                        'Usuario ID: ${state.user.name}',
-                        HugeIcons.strokeRoundedTick01,
-                      );
-                    }
-                    return const SizedBox.shrink();
-                  },
-                ),
+                _buildApproverInfo(context, widget.transaction.approvedBy!),
               if (widget.transaction.rejectedBy != null)
-                _buildInfoRow(
-                  'Rechazado por',
-                  'Usuario ID: ${widget.transaction.rejectedBy}',
-                  HugeIcons.strokeRoundedCancel01,
+                _buildRejecterInfo(context, widget.transaction.rejectedBy!),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildCreatedByInfo(BuildContext context, String createdBy) {
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, state) {
+        UserEntity? currentUser;
+        if (state is AuthAuthenticated) {
+          currentUser = state.user;
+        }
+          
+        return _buildInfoRow(
+          'Creado por',
+          currentUser?.name ?? 'Usuario ID: $createdBy',
+          HugeIcons.strokeRoundedUser,
+        );
+      },
+    );
+  }
+
+  Widget _buildApproverInfo(BuildContext context, String approverId) {
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is! UserLoaded || state.user.id != approverId) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<UserBloc>().add(GetUserByIdRequested(approverId));
+          });
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<UserBloc>().add(GetUserByIdRequested(approverId));
+          });
+          
+          return _buildInfoRowWithLoading(
+            'Aprobado por',
+            'Cargando...',
+            HugeIcons.strokeRoundedTick01,
+          );
+        }
+        
+        if (state.user.id == approverId) {
+          return _buildInfoRow(
+            'Aprobado por',
+            state.user.name,
+            HugeIcons.strokeRoundedTick01,
+          );
+        }
+        
+        return _buildInfoRow(
+          'Aprobado por',
+          'Usuario ID: $approverId',
+          HugeIcons.strokeRoundedTick01,
+        );
+      },
+    );
+  }
+
+  Widget _buildRejecterInfo(BuildContext context, String rejecterId) {
+    return BlocBuilder<UserBloc, UserState>(
+      builder: (context, state) {
+        if (state is! UserLoaded || state.user.id != rejecterId) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            context.read<UserBloc>().add(GetUserByIdRequested(rejecterId));
+          });
+          
+          return _buildInfoRowWithLoading(
+            'Rechazado por',
+            'Cargando...',
+            HugeIcons.strokeRoundedCancel01,
+          );
+        }
+        
+        if (state.user.id == rejecterId) {
+          return _buildInfoRow(
+            'Rechazado por',
+            state.user.name,
+            HugeIcons.strokeRoundedCancel01,
+          );
+        }
+        
+        return _buildInfoRow(
+          'Rechazado por',
+          'Usuario ID: $rejecterId',
+          HugeIcons.strokeRoundedCancel01,
+        );
+      },
+    );
+  }
+
+  Widget _buildInfoRowWithLoading(String label, String value, IconData icon) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: context.primary.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Icon(
+            icon,
+            color: context.primary,
+            size: 18,
+          ),
+        ),
+        const SizedBox(width: 12),
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                label,
+                style: context.bodySmall.copyWith(
+                  color: context.secondary.withValues(alpha: 0.6),
+                  fontWeight: FontWeight.w500,
                 ),
+              ),
+              const SizedBox(height: 4),
+              Row(
+                children: [
+                  SizedBox(
+                    width: 12,
+                    height: 12,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 1.5,
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        context.primary.withValues(alpha: 0.7),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    value,
+                    style: context.bodyMedium.copyWith(
+                      color: context.secondary.withValues(alpha: 0.7),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ],
+              ),
             ],
           ),
         ),
@@ -507,10 +627,8 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
           currentUser = authState.user;
         }
 
-        // Solo usuarios admin y root pueden cambiar el estado
         final canUpdateStatus = currentUser?.role == UserRole.admin || currentUser?.role == UserRole.root;
 
-        // Solo mostrar botones de acción si puede actualizar y el estado es pendiente
         final showActionButtons = canUpdateStatus && widget.transaction.status == StatusTransaction.pending;
 
         if (context.isMobile) {
@@ -560,7 +678,6 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
             ],
           );
         } else {
-          // En tablet/desktop, botones en fila
           return Row(
             children: [
               Expanded(
@@ -618,14 +735,11 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
     );
   }
 
-  // ===================== MÉTODOS AUXILIARES =====================
-
   bool _isLoading(TransactionState state) {
     return state is TransactionLoading;
   }
 
   void _updateTransactionStatus(StatusTransaction newStatus) {
-    // Mostrar diálogo de confirmación
     showDialog(
       context: context,
       builder: (dialogContext) => AlertDialog(
@@ -657,7 +771,7 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(),
+            onPressed: () => dialogContext.pop(),
             child: Text(
               'Cancelar',
               style: context.bodyMedium.copyWith(
@@ -667,7 +781,13 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
           ),
           ElevatedButton(
             onPressed: () {
-              Navigator.of(dialogContext).pop();
+              dialogContext.pop();
+              
+              final authState = context.read<AuthBloc>().state;
+              String? currentUserId;
+              if (authState is AuthAuthenticated) {
+                currentUserId = authState.user.id;
+              }
               
               final updatedTransaction = TransactionEntity(
                 id: widget.transaction.id,
@@ -679,6 +799,8 @@ class _TransactionDetailModalState extends State<TransactionDetailModal>
                 createdBy: widget.transaction.createdBy,
                 status: newStatus,
                 createdAt: widget.transaction.createdAt,
+                approvedBy: newStatus == StatusTransaction.approved ? currentUserId : widget.transaction.approvedBy,
+                rejectedBy: newStatus == StatusTransaction.rejected ? currentUserId : widget.transaction.rejectedBy,
               );
               
               context.read<TransactionBloc>().add(

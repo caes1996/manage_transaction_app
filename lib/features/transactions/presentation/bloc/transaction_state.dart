@@ -44,15 +44,6 @@ class TransactionUpdated extends TransactionState {
   List<Object?> get props => [message, shouldCloseModal];
 }
 
-class TransactionDeleted extends TransactionState {
-  final String message;
-  final bool shouldCloseModal;
-  TransactionDeleted(this.message, {this.shouldCloseModal = true});
-
-  @override
-  List<Object?> get props => [message, shouldCloseModal];
-}
-
 class TransactionError extends TransactionState {
   final String message;
   TransactionError(this.message);

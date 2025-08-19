@@ -28,26 +28,6 @@ class CreateUserRequested extends UserEvent {
   List<Object?> get props => [user, password];
 }
 
-// Nuevos eventos CRUD
-class UpdateUserRequested extends UserEvent {
-  final String userId;
-  final UserEntity user;
-  
-  UpdateUserRequested(this.userId, this.user);
-  
-  @override
-  List<Object?> get props => [userId, user];
-}
-
-class DeleteUserRequested extends UserEvent {
-  final String userId;
-  
-  DeleteUserRequested(this.userId);
-  
-  @override
-  List<Object?> get props => [userId];
-}
-
 // Eventos para realtime
 class UsersWatchRequested extends UserEvent {}
 

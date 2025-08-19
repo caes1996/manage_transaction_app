@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:manage_transaction_app/features/auth/domain/entities/user_entity.dart';
-import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_bloc.dart';
-import 'package:manage_transaction_app/features/auth/presentation/bloc/auth/auth_state.dart';
 import 'package:manage_transaction_app/features/transactions/domain/entities/transaction_entity.dart';
 
 extension BuildContextExtension on BuildContext {
@@ -24,20 +21,6 @@ extension BuildContextExtension on BuildContext {
   Size get size => MediaQuery.of(this).size;
   double get width => MediaQuery.of(this).size.width;
   double get height => MediaQuery.of(this).size.height;
-}
-
-extension UserContextExtension on BuildContext {
-  UserEntity? get currentUser {
-    return select<AuthBloc, UserEntity?>((bloc) {
-      final s = bloc.state;
-      return s is AuthAuthenticated ? s.user : null;
-    });
-  }
-
-  bool get isLoggedIn {
-    final s = read<AuthBloc>().state;
-    return s is AuthAuthenticated;
-  }
 }
 
 enum SizeScreen {mobile, tablet, desktop}
@@ -72,6 +55,20 @@ extension StringExtension on String {
   }
 
   String get capitalize => this[0].toUpperCase() + substring(1);
+}
+
+extension UserRoleExtension on UserRole {
+  String get displayName => switch (this) {
+    UserRole.root => 'Root',
+    UserRole.admin => 'Administrador',
+    UserRole.transactional => 'Transaccional',
+  };
+
+  Color get color => switch (this) {
+    UserRole.root => const Color(0xFFE43629),
+    UserRole.admin => const Color(0xFF197DCF),
+    UserRole.transactional => const Color(0xFF289C2C),
+  };
 }
 
 extension StatusTransactionExtension on StatusTransaction {

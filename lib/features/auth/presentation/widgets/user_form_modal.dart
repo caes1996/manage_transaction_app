@@ -23,35 +23,34 @@ class _UserFormModalState extends State<UserFormModal> {
   String _name = '';
   UserRole? _role;
 
-  // Variables responsivas según el contexto
   double _getModalWidth(BuildContext context) {
     if (context.isMobile) return MediaQuery.of(context).size.width * 0.95;
     if (context.isTablet) return 500.0;
-    return 450.0; // Desktop
+    return 450.0;
   }
 
   EdgeInsets _getModalPadding(BuildContext context) {
     if (context.isMobile) return const EdgeInsets.all(16.0);
     if (context.isTablet) return const EdgeInsets.all(24.0);
-    return const EdgeInsets.all(32.0); // Desktop
+    return const EdgeInsets.all(32.0);
   }
 
   double _getFieldSpacing(BuildContext context) {
     if (context.isMobile) return 12.0;
     if (context.isTablet) return 16.0;
-    return 20.0; // Desktop
+    return 20.0;
   }
 
   double _getTitleSize(BuildContext context) {
     if (context.isMobile) return 20.0;
     if (context.isTablet) return 22.0;
-    return 24.0; // Desktop
+    return 24.0;
   }
 
   double _getButtonHeight(BuildContext context) {
     if (context.isMobile) return 45.0;
     if (context.isTablet) return 48.0;
-    return 52.0; // Desktop
+    return 52.0;
   }
 
   @override
@@ -83,10 +82,8 @@ class _UserFormModalState extends State<UserFormModal> {
           listener: (context, state) {
             if (state is UserCreated) {
               _showSnackBar(context, state.message, Colors.green, Icons.check_circle);
-              // Cerrar el modal después de un breve delay
               Future.delayed(const Duration(milliseconds: 500), () {
                 if (mounted) {
-                  // ignore: use_build_context_synchronously
                   context.pop();
                 }
               });
@@ -131,11 +128,10 @@ class _UserFormModalState extends State<UserFormModal> {
   Widget _buildHeader(BuildContext context, UserState state) {
     return Column(
       children: [
-        // Icono de cierre
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const SizedBox(width: 40), // Espaciado
+            const SizedBox(width: 40),
             Text(
               'Registro de Usuario',
               style: TextStyle(
@@ -240,7 +236,6 @@ class _UserFormModalState extends State<UserFormModal> {
     final isLoading = _isLoading(state);
     
     if (context.isMobile) {
-      // En móvil, botones apilados verticalmente
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
@@ -266,7 +261,6 @@ class _UserFormModalState extends State<UserFormModal> {
         ],
       );
     } else {
-      // En tablet/desktop, botones en fila
       return Row(
         children: [
           Expanded(
@@ -297,7 +291,6 @@ class _UserFormModalState extends State<UserFormModal> {
     }
   }
 
-  // Método auxiliar para verificar si está cargando
   bool _isLoading(UserState state) {
     return state is UserLoading || state is UserOperationLoading;
   }
@@ -307,9 +300,8 @@ class _UserFormModalState extends State<UserFormModal> {
       _formKey.currentState!.save();
       FocusScope.of(context).unfocus();
       
-      // CAMBIO PRINCIPAL: Usar UserBloc en lugar de AuthBloc
       final user = UserEntity(
-        id: '', // Se generará automáticamente
+        id: '',
         name: _name,
         email: _email,
         role: _role!,
@@ -319,8 +311,6 @@ class _UserFormModalState extends State<UserFormModal> {
       context.read<UserBloc>().add(
         CreateUserRequested(user, _password),
       );
-      
-      // NO llamar context.pop() aquí - el BlocListener se encargará
     }
   }
 
@@ -345,7 +335,6 @@ class _UserFormModalState extends State<UserFormModal> {
   }
 }
 
-// ModalHelper corregido
 class ModalHelper {
   static Future<void> showUserFormModal(BuildContext context) {
     return showDialog<void>(
@@ -353,7 +342,6 @@ class ModalHelper {
       barrierDismissible: false,
       barrierColor: Colors.black.withValues(alpha: 0.5),
       builder: (BuildContext dialogContext) {
-        // CAMBIO IMPORTANTE: Pasar el UserBloc al modal
         return BlocProvider<UserBloc>.value(
           value: context.read<UserBloc>(),
           child: const UserFormModal(),

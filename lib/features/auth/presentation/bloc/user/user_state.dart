@@ -1,4 +1,3 @@
-// user_state.dart - Estados mejorados
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/user_entity.dart';
 
@@ -27,7 +26,6 @@ class UsersLoaded extends UserState {
   List<Object?> get props => [users];
 }
 
-// Estados para operaciones CRUD con mejor control
 class UserCreated extends UserState {
   final String message;
   final bool shouldCloseModal;

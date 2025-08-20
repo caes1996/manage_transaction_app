@@ -101,8 +101,6 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  // ===================== VISTAS RESPONSIVAS =====================
-
   Widget _buildDesktopView(dynamic user) {
     return FadeTransition(
       opacity: _fadeAnimation,
@@ -111,7 +109,6 @@ class _ProfilePageState extends State<ProfilePage>
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Panel izquierdo - Avatar y información básica
             Expanded(
               flex: 2,
               child: Column(
@@ -172,8 +169,6 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     );
   }
-
-  // ===================== COMPONENTES PRINCIPALES =====================
 
   Widget _buildProfileCard(UserEntity user) {
     return ScaleTransition(
@@ -402,8 +397,6 @@ class _ProfilePageState extends State<ProfilePage>
     );
   }
 
-  // ===================== COMPONENTES AUXILIARES =====================
-
   Widget _buildStatItem({
     required IconData icon,
     required String label,
@@ -536,8 +529,6 @@ class _ProfilePageState extends State<ProfilePage>
       ),
     );
   }
-
-  // ===================== MÉTODOS AUXILIARES =====================
 
   String _formatCreatedAt(dynamic createdAt) {
     if (createdAt == null) return 'Fecha no disponible';

@@ -6,7 +6,7 @@ class UserRemoteDataSource {
   final SupabaseClient client;
   UserRemoteDataSource(this.client);
 
-  final String _schema = dotenv.env['DB_SCHEMA_TEST']!;
+  final String _schema = dotenv.env['DB_SCHEMA']!;
   final String _tableName = 'users';
 
   PostgrestQueryBuilder get _usersTable => client.schema(_schema).from(_tableName);

@@ -1,4 +1,3 @@
-// user_event.dart - Eventos completos
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/user_entity.dart';
 
@@ -7,7 +6,6 @@ abstract class UserEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-// Eventos existentes
 class GetUserByIdRequested extends UserEvent {
   final String id;
   GetUserByIdRequested(this.id);
@@ -28,7 +26,6 @@ class CreateUserRequested extends UserEvent {
   List<Object?> get props => [user, password];
 }
 
-// Eventos para realtime
 class UsersWatchRequested extends UserEvent {}
 
 class UsersStopWatching extends UserEvent {}

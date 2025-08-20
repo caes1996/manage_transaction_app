@@ -15,7 +15,7 @@ Future<void> main() async {
   await dotenv.load(fileName: ".env");
   await initDependencies();
 
-  schemaController = SchemaController(dotenv.env['DB_SCHEMA_TEST']!);
+  schemaController = SchemaController(dotenv.env['DB_SCHEMA']!);
 
   runApp(ManageTransactionApp(schemaController: schemaController));
 }

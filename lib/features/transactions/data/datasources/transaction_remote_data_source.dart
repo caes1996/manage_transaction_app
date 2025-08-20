@@ -7,7 +7,7 @@ class TransactionRemoteDataSource {
   final SupabaseClient client;
   TransactionRemoteDataSource(this.client);
 
-  final String _schema = dotenv.env['DB_SCHEMA_TEST']!;
+  final String _schema = dotenv.env['DB_SCHEMA']!;
   final String _tableName = 'transactions';
 
   PostgrestQueryBuilder get _table => client.schema(_schema).from(_tableName);

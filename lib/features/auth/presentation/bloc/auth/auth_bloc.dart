@@ -19,8 +19,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         if (session != null) {
           try {
             await authRepository.ensureCurrentUserRow();
-            
-            // CAMBIO PRINCIPAL: Obtener usuario desde la base de datos
             final userFromDB = await authRepository.getCurrentUserFromBd();
             if (userFromDB != null) {
               emit(AuthAuthenticated(userFromDB));

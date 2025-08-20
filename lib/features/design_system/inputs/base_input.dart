@@ -2,10 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:hugeicons/hugeicons.dart';
 import 'package:manage_transaction_app/core/constants/app_extensions.dart';
 
-/// Color principal tomado del diseño de referencia (#667eea)
 const Color _kPrimaryAccent = Color(0xFF667eea);
 
-/// Reglas de validación reutilizables
 class ValidationRule {
   const ValidationRule({
     required this.condition,
@@ -32,7 +30,6 @@ class ValidationRule {
       );
 }
 
-/// Base común para inputs de texto (TextField/TextFormField)
 abstract class BaseInputText extends StatefulWidget {
   const BaseInputText({
     super.key,
@@ -79,7 +76,6 @@ class InputUtils {
     );
   }
 
-  /// Toma en cuenta modo de lectura y requerido para el color del texto
   static TextStyle getTextStyle(
     BuildContext context,
     bool readOnly, [
@@ -95,12 +91,11 @@ class InputUtils {
     );
   }
 
-  /// Tamaños responsivos según ancho
   static double _fontSizeFor(BuildContext context) {
     final w = MediaQuery.of(context).size.width;
-    if (w >= 1200) return 16; // desktop
-    if (w >= 600) return 15; // tablet
-    return 14; // phone
+    if (w >= 1200) return 16;
+    if (w >= 600) return 15;
+    return 14;
   }
 
   static double iconSizeFor(BuildContext context) {
@@ -117,7 +112,6 @@ class InputUtils {
     return 12;
   }
 
-  /// Construye la decoración siguiendo el patrón del widget de referencia
   static InputDecoration buildDecoration(
     BuildContext context,
     String? hint,
@@ -177,17 +171,11 @@ class InputUtils {
         borderRadius: BorderRadius.circular(15),
         borderSide: const BorderSide(color: Colors.red, width: 2),
       ),
-      // Indicador visual de requerido en el label flotante
       floatingLabelStyle: theme.textTheme.bodyMedium?.copyWith(
         color: errorText != null ? theme.colorScheme.error : Colors.grey[700],
       ),
     );
   }
 
-  /// Prefijo con ícono según tono de marca
-  static Widget buildPrefixIcon(IconData icon, BuildContext context) => Icon(
-        icon,
-        color: _kPrimaryAccent,
-        size: iconSizeFor(context),
-      );
+  static Widget buildPrefixIcon(IconData icon, BuildContext context) => Icon(icon, color: _kPrimaryAccent, size: iconSizeFor(context));
 }

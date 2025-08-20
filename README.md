@@ -97,8 +97,8 @@ Crea un archivo `.env` en la raíz del proyecto (ya está referenciado en `pubsp
 ```env
 SUPABASE_URL=https://YOUR_PROJECT.supabase.co
 SUPABASE_ANON_KEY=YOUR_ANON_PUBLIC_KEY
-DB_SCHEMA_TEST=<schema_test>
-DB_SCHEMA_PROD=<shcema_production>
+# DB_SCHEMA=<schema_test>
+DB_SCHEMA=<shcema_production>
 ```
 
 ---

@@ -65,8 +65,6 @@ class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMix
     );
   }
 
-  // ===================== VISTAS RESPONSIVAS =====================
-
   Widget _buildDesktopView(UserState state) {
     return Scaffold(
       body: FadeTransition(
@@ -184,8 +182,6 @@ class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMix
       },
     );
   }
-
-  // ===================== HEADERS ESPECÍFICOS =====================
 
   Widget _buildDesktopHeader() {
     return Container(
@@ -309,8 +305,6 @@ class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMix
     );
   }
 
-  // ===================== CONTENIDO ESPECÍFICO =====================
-
   Widget _buildDesktopContent(UserState state) {
     if (state is UserLoading) return _buildLoadingState();
     if (state is UserError) return _buildErrorState(state.message);
@@ -356,8 +350,6 @@ class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMix
 
     return _buildDefaultState();
   }
-
-  // ===================== WIDGETS COMUNES REUTILIZABLES =====================
 
   Widget _buildHeaderIcon() {
     return Container(
@@ -814,8 +806,6 @@ class _UsersPageState extends State<UsersPage> with SingleTickerProviderStateMix
       ),
     );
   }
-
-  // ===================== MÉTODOS AUXILIARES =====================
 
   List<UserEntity> _getFilteredUsers(List<UserEntity> users) {
     return users.where((user) {

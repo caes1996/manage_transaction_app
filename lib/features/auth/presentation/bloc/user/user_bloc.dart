@@ -25,7 +25,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
-    // Carga manual completa (fallback)
     on<GetAllUsersRequested>((event, emit) async {
       emit(UserLoading());
       try {
@@ -36,7 +35,6 @@ class UserBloc extends Bloc<UserEvent, UserState> {
       }
     });
 
-    // Crear usuario con mejor manejo de estados
     on<CreateUserRequested>((event, emit) async {
       emit(UserOperationLoading('creating'));
       try {
@@ -57,8 +55,7 @@ class UserBloc extends Bloc<UserEvent, UserState> {
 
     // Realtime: iniciar observación
     on<UsersWatchRequested>((event, emit) async {
-      if (_usersSub != null) return; // Ya está observando
-      
+      if (_usersSub != null) return;
       emit(UserLoading());
       
       _usersSub = userRepository.watchUsers().listen(
